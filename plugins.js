@@ -1,6 +1,6 @@
 var fs = require('fs'),
 plugins = {},
-watchDir= function(dir) {
+watchDir = function(dir) {
 	fs.readdir(dir, function(err, files) {
 		files.forEach(function(file) {
 			file = dir + file;
@@ -18,7 +18,9 @@ watchDir= function(dir) {
 };
 
 exports.watch = function(dir) {
-    watch(dir);
-    fs.watchFile(dir, watch(dir));
+	watchDir(dir);
+	fs.watchFile(dir, function() {
+		watchDir(dir)
+	});
 };
 
