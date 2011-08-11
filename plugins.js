@@ -6,17 +6,17 @@ pluginFullPath = path.join('/', path.join(path.dirname(__filename), 'plugins/'))
 plugins = {},
 req = function(file) {
     var plugin = file.replace(/.*\//, '').green;
-    winston.info('Require plugin ' + plugin);
+    winston.info('[plugins] Require plugin ' + plugin);
     try {
         return require(file);
     } catch(e) {
-        winston.error('Error while loading plugin ' + plugin + ' (' + e.toString() + ')');
+        winston.error('[plugins] Error while loading plugin ' + plugin + ' (' + e.toString() + ')');
     }
     return null;
 };
 
 exports.watch = function() {
-    winston.info('Watching ' + pluginFullPath.yellow + ' for plugins');
+    winston.info('[plugins] Watching ' + pluginFullPath.yellow + ' for plugins');
     fs.readdir(pluginFullPath, function(err, files) {
         files.forEach(function(file) {
             if (file.match(/\.js$/)) {
@@ -32,6 +32,7 @@ exports.watch = function() {
                                 plugins[file].destruct();
                             }
                         }
+                        winston.info('[plugins] Removing ' + file.replace(/^.*\//, '').green + ' from cache');
                         delete require.cache[require.resolve(file)];
                         plugins[file] = req(file);
                     }
