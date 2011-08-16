@@ -16,7 +16,7 @@ req = function(file) {
 };
 
 exports.watch = function() {
-    winston.info('[plugins] Watching ' + pluginFullPath.yellow + ' for plugins');
+    winston.info('[plugins] Watching ' + pluginFullPath + ' for plugins');
     fs.readdir(pluginFullPath, function(err, files) {
         files.forEach(function(file) {
             if (file.match(/\.js$/)) {
@@ -32,7 +32,7 @@ exports.watch = function() {
                                 plugins[file].destruct();
                             }
                         }
-                        winston.info('[plugins] Removing ' + file.replace(/^.*\//, '').green + ' from cache');
+                        winston.info('[plugins] Removing ' + file.replace(/^.*\//, '') + ' from cache');
                         delete require.cache[require.resolve(file)];
                         plugins[file] = req(file);
                     }
