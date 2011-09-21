@@ -7,19 +7,20 @@ function req(file, callback) {
     try {
         module = require(file);
         files[file] = module;
-        callback && callback(null, file);
+        callback && callback(null, file, module);
     } catch(e) {
         callback && callback(e);
     }
 }
 
 exports.watch = function(directory, callback) {
+    directory = path.resolve(directory);
+
     fs.readdir(directory, function(err, files) {
         files.forEach(function(file) {
-            if (file.match(/\.js$/)) {
-
+            if (file.match(/^(?!\.).+\.js$/)) {
                 file = path.join(directory, file);
-                req(file);
+                req(file, callback);
 
                 fs.watchFile(file, function(current, previous) {
                     if ( + current.mtime !== + previous.mtime) {
@@ -28,7 +29,6 @@ exports.watch = function(directory, callback) {
                                 files[file].destruct();
                             }
                         }
-                        console.log('Removing ' + file.replace(/^.*\//, '') + ' from cache');
                         delete require.cache[require.resolve(file)];
                         req(file, callback);
                     }
